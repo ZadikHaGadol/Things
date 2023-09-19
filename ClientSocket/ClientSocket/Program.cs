@@ -25,7 +25,7 @@ namespace ClientSocket
             //abcdefgh
             //BB
             //BBcdefgh
-
+            x
             Array.Clear(b, 0, b.Length);
             cs.Receive(b);
 
