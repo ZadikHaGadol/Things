@@ -13,7 +13,7 @@ namespace ClientSocket
         static void Main(string[] args)
         {
             int BUFFER_SIZE = 2048;
-            IPAddress server_ip = IPAddress.Parse("127.0.0.1");
+            IPAddress server_ip = IPAddress.Parse("10.0.0.30");
             IPEndPoint ipe = new IPEndPoint(server_ip, 1234);
             Socket cs = new Socket(server_ip.AddressFamily,SocketType.Stream, ProtocolType.Tcp);
 
