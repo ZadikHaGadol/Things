@@ -1,0 +1,7 @@
+C:\Users\Cyber-Public\source\repos\ReverseShellServer\ReverseShellServer\bin\Debug\ReverseShellServer.exe.config
+C:\Users\Cyber-Public\source\repos\ReverseShellServer\ReverseShellServer\bin\Debug\ReverseShellServer.exe
+C:\Users\Cyber-Public\source\repos\ReverseShellServer\ReverseShellServer\bin\Debug\ReverseShellServer.pdb
+C:\Users\Cyber-Public\source\repos\ReverseShellServer\ReverseShellServer\obj\Debug\ReverseShellServer.csproj.AssemblyReference.cache
+C:\Users\Cyber-Public\source\repos\ReverseShellServer\ReverseShellServer\obj\Debug\ReverseShellServer.csproj.CoreCompileInputs.cache
+C:\Users\Cyber-Public\source\repos\ReverseShellServer\ReverseShellServer\obj\Debug\ReverseShellServer.exe
+C:\Users\Cyber-Public\source\repos\ReverseShellServer\ReverseShellServer\obj\Debug\ReverseShellServer.pdb
